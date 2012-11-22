@@ -1,9 +1,12 @@
+import re
+import sys
+
 class Program(object):
-    WHITESPACE = re.compile('\s')
+    WHITESPACE = re.compile('\s{1}')
 
     """docstring for Programm"""
     def __init__(self, f):
-        super(Programm, self).__init__()
+        super(Program, self).__init__()
         self.tokens = []
         self.label = {}
 
@@ -12,24 +15,37 @@ class Program(object):
 
         self.instructions = {}
         self.parse_token(f)
+        print(self.tokens)
+        print(self.label)
 
-   def parse_token(self, file):
-        with file.open() as fp:
-            for i in fp.read().split(WHITESPACE):
+    def add(self):
+        self.stack.append(self.stack.pop() + self.stack.pop())
+
+    def parse_token(self, file):
+        with open(file) as fp:
+            commented = False
+            for i in fp.read().split():
+                if i.startswith("/*"):
+                    commented = True
+                    continue
+                if commented:
+                    if i.endswith("*/"):
+                        commented = False
+                    continue
                 if i:
-                    if i.endWith(':'):
-                        self.label[i.rstrip(':')] = len(self.tokens) - 1
+                    if i[-1] == ':':
+                        self.label[i.rstrip(':')] = len(self.tokens)
                     else:
-                        self.tokens.push(i)
+                        self.tokens.append(i)
 
-   def next(self):
+    def next(self):
        actual_token = self.token[self.pc]
        self.pc += 1
        return actual_token
 
-   def execute(self, token):
+    def execute(self, token):
        #token is an instruction
-       self.instructions.get(token)]
+       self.instructions.get(token)
 
 
 
