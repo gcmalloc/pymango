@@ -47,7 +47,7 @@ class Mango(object):
                         self.tokens.append(i.strip())
 
     def op(self, f):
-        self.stack.append(f(self.getvi(self.stack.pop()), self.getvi(self.stack.pop())))
+        self.stack.append(f(self.pop(), self.pop()))
 
     def in_mod(self):
         self.op(lambda a, b: b % a)
@@ -70,26 +70,26 @@ class Mango(object):
         self.pc = next_pc
 
     def in_vstore(self):
-        self.array[self.getvi(self.stack.pop())] = self.getvi(self.stack.pop())
+        self.array[self.pop()] = self.pop()
 
     def in_vload(self):
-        self.stack.append(self.getvi(self.array[self.getvi(self.stack.pop())]))
+        self.stack.append(self.getvi(self.array[self.pop()]))
 
     def in_store(self):
         name = self.stack.pop()
-        value = self.getvi(self.stack.pop())
+        value = self.pop()
         self.vars_[name.name] = value
 
     def in_load(self):
         self.stack.append(self.vars_[self.stack.pop()])
 
     def in_jump(self):
-        self.pc = self.getvi(self.stack.pop())
+        self.pc = self.pop()
 
     def branch(self, f):
-        false_j = self.getvi(self.stack.pop())
-        true_j = self.getvi(self.stack.pop())
-        cond = self.getvi(self.stack.pop())
+        false_j = self.pop()
+        true_j = self.pop()
+        cond = self.pop()
         if f(cond):
             #true we take the upper one
             self.pc = true_j
@@ -104,7 +104,7 @@ class Mango(object):
         self.branch(lambda a: a > 0)
 
     def in_print_num(self):
-        sys.stdout.write(str(self.getvi(self.stack.pop())))
+        sys.stdout.write(str(self.pop()))
 
     def in_print_byte(self):
         sys.stdout.write(chr(self.stack.pop()))
@@ -124,6 +124,9 @@ class Mango(object):
        actual_token = self.tokens[self.pc]
        self.pc = self.pc + 1
        return actual_token
+
+    def pop(self):
+        return self.getvi(self.stack.pop())
 
     def getvi(self, token):
         try:
