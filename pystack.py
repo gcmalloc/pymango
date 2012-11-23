@@ -2,13 +2,15 @@ import re
 import sys
 import inspect
 import logging
+from collections import namedtuple
+Var = namedtuple('Var', ['name', 'value'])
 
-class Program(object):
+class Mango(object):
     WHITESPACE = re.compile('\s{1}')
 
     """docstring for Programm"""
     def __init__(self, f):
-        super(Program, self).__init__()
+        super(Mango, self).__init__()
         self.tokens = []
         self.label = {}
 
@@ -76,7 +78,7 @@ class Program(object):
     def in_store(self):
         name = self.stack.pop()
         value = self.getvi(self.stack.pop())
-        self.vars_[name[0]] = value
+        self.vars_[name.name] = value
 
     def in_load(self):
         self.stack.append(self.vars_[self.stack.pop()])
@@ -127,7 +129,7 @@ class Program(object):
         try:
             return int(token)
         except (ValueError, TypeError):
-            return token[1]
+            return token.value
 
 
     def run(self):
@@ -156,13 +158,8 @@ class Program(object):
            try:
             self.stack.append(int(tok))
            except ValueError:
-            self.stack.append((tok, self.vars_.get(tok), ))
-
-
-
-def main():
-    Program(sys.argv[1])
+            self.stack.append(Var(tok, self.vars_.get(tok)))
 
 if __name__ == '__main__':
-    logging.getLogger().setLevel(logging.DEBUG)
-    main()
+    #logging.getLogger().setLevel(logging.DEBUG)
+    Mango(sys.argv[1])
