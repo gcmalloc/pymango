@@ -10,7 +10,6 @@ class Mango(object):
 
     """docstring for Programm"""
     def __init__(self, f):
-        super(Mango, self).__init__()
         self.tokens = []
         self.label = {}
 
@@ -34,11 +33,11 @@ class Mango(object):
             commented = False
             for i in fp.read().split():
                 if i.startswith("/*"):
-                    commented = True
+                    commented += 1
                     continue
                 if commented:
                     if i.endswith("*/"):
-                        commented = False
+                        commented -= 1
                     continue
                 if i:
                     if i[-1] == ':':
@@ -73,7 +72,7 @@ class Mango(object):
         self.array[self.pop()] = self.pop()
 
     def in_vload(self):
-        self.stack.append(self.getvi(self.array[self.pop()]))
+        self.stack.append(self.array[self.pop()])
 
     def in_store(self):
         name = self.stack.pop()
@@ -120,20 +119,17 @@ class Mango(object):
     def in_read_byte(self):
         self.in_read_num(self)
 
+    def pop(self):
+        top_token = self.stack.pop()
+        try:
+            return int(top_token)
+        except (ValueError, TypeError):
+            return top_token.value
+
     def next_token(self):
        actual_token = self.tokens[self.pc]
        self.pc = self.pc + 1
        return actual_token
-
-    def pop(self):
-        return self.getvi(self.stack.pop())
-
-    def getvi(self, token):
-        try:
-            return int(token)
-        except (ValueError, TypeError):
-            return token.value
-
 
     def run(self):
        logging.debug("stack is")
