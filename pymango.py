@@ -117,7 +117,7 @@ class Mango(object):
         self.stack.append(int(input()))
 
     def in_read_byte(self):
-        self.in_read_num(self)
+        self.in_read_num()
 
     def pop(self):
         top_token = self.stack.pop()
